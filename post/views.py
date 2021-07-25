@@ -1,15 +1,19 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.decorators import api_view, parser_classes
-from rest_framework import status
+from rest_framework import settings, status
 from rest_framework.parsers import FileUploadParser
 import cloudinary
 import cloudinary.uploader
+
+import facebook
 
 from user.utlls import authorized
 
 from .models import CommentModel, PostLikeModel, PostModel
 from .serializers import CommentCreateSerializer, CommentSerializer, PostLikeListOfUsersSerializer, PostListSerializer, PostCreateSerializer
+
+facebookGraph = facebook.GraphAPI({"EAAFBg1UDY20BAAN3oITyB5z13W50ozkNM9WZBbNTWhJSp52wyKzA5C5KcwZCg0YPqWGrulmrtYymh5CZCpUJtZALdJa2hBGM6lPCqIK0RCb6s1ce7kZAc7JZATxSGlS59DJw4SbWZCDcnOFDZAzt7P3niVfpSfaU1rot3HOl9OfZCpZAwTBkYW37ZCIantGitYyJXkADhIYcZBlcCgZDZD"})
 
 @api_view(["GET"])
 @authorized
@@ -165,3 +169,10 @@ def list_comment(_, post):
         return Response({"comments": serialized.data}, status=status.HTTP_200_OK)
     except:
         return Response({"comment": []}, status=500)
+    
+@api_view(['GET'])
+@authorized
+def getFacebookPosts(_):
+    fields= ['id', 'created_time', 'message']
+    profile = facebookGraph.get_object('Leo.KU.kavre/feed',fields=fields)
+    return Response(profile)

@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 
-from .views import comment_detail, create_comment, getLikeCountByPost, getLikesByPost, image_upload, list, listOneById, listOneByUser, create, listOneByUserByEmail, list_comment, postLike, getFeed
+from .views import comment_detail, create_comment, getFacebookPosts, getLikeCountByPost, getLikesByPost, image_upload, list, listOneById, listOneByUser, create, listOneByUserByEmail, list_comment, postLike, getFeed
 
 urlpatterns = [
     path("", list, name="list posts"),
@@ -14,6 +14,7 @@ urlpatterns = [
     path("comment/create/", create_comment, name="create comment"),
     path("comment/count/<int:post>/", comment_detail, name="number of comments"),
     path("comment/lists/<int:post>/", list_comment, name="list of comments"),
+    path("notices/", getFacebookPosts, name="facebook posts"),
     re_path(r'^upload/(?P<filename>[^/]+)$', image_upload),
     path("<int:id>/", listOneById, name="list one post"),
 ]

@@ -12,6 +12,7 @@ django-cors-headers = "*"
 uritemplate = "*"
 pyjwt = "*"
 cloudinary = "*"
+facebook-sdk = "*"
 
 [dev-packages]
 
