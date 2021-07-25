@@ -13,7 +13,7 @@ from user.utlls import authorized
 from .models import CommentModel, PostLikeModel, PostModel
 from .serializers import CommentCreateSerializer, CommentSerializer, PostLikeListOfUsersSerializer, PostListSerializer, PostCreateSerializer
 
-facebookGraph = facebook.GraphAPI({"EAAFBg1UDY20BAAN3oITyB5z13W50ozkNM9WZBbNTWhJSp52wyKzA5C5KcwZCg0YPqWGrulmrtYymh5CZCpUJtZALdJa2hBGM6lPCqIK0RCb6s1ce7kZAc7JZATxSGlS59DJw4SbWZCDcnOFDZAzt7P3niVfpSfaU1rot3HOl9OfZCpZAwTBkYW37ZCIantGitYyJXkADhIYcZBlcCgZDZD"})
+facebookGraph = facebook.GraphAPI({"EAAFBg1UDY20BAOTOKWyzorjBcppQoq137tiJmX4j7ILgPQ6PfBZBblbmFq0bHasu57UlpKuIfLkkX03f9m5LbxpWIeOlmlvQmSrmQ0lSVJn1skq448X39D5W8FQbjCdLerhOk7MpXE9BQVLyjJgzyGRazS9jaM1TYzoICsiAeGED2D2I4V4ao7JvZAKpZA8qkHfZBjttowZDZD"})
 
 @api_view(["GET"])
 @authorized
@@ -173,6 +173,6 @@ def list_comment(_, post):
 @api_view(['GET'])
 @authorized
 def getFacebookPosts(_):
-    fields= ['id', 'created_time', 'message']
-    profile = facebookGraph.get_object('Leo.KU.kavre/feed',fields=fields)
+    fields= ['id', 'message', 'picture', 'created_time']
+    profile = facebookGraph.get_object('Leo.KU.kavre/feed',fields=','.join(fields))
     return Response(profile)
