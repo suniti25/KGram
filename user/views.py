@@ -1,5 +1,6 @@
 from typing import List
 from django.core.exceptions import ValidationError
+from rest_framework import request
 from rest_framework.parsers import FileUploadParser
 from user.utlls import authorized, generateToken
 from django.conf import settings
@@ -22,6 +23,20 @@ def list(_):
     all = UserModel.objects.all()
     serialized = UserListSerializer(all, many=True)
     return Response({"users": serialized.data}, status=200)
+
+
+@api_view(['GET'])
+@authorized
+def listUnfollowed(_):
+    """Get list of records of unfollowed users"""
+    try:
+        all = UserModel.objects.all()
+        serialized = UserListSerializer(all, many=True)
+        user : UserModel = _.user
+        followList = [x['id'] for x in _.follows]
+        return Response({"users": [x for x in serialized.data if not x['id'] == user.id and not x['id'] in followList]}, status=200)
+    except:
+        return Response({"users": []}, status=200)
 
 @api_view(['GET'])
 @authorized

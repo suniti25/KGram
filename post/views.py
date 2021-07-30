@@ -85,7 +85,6 @@ def getFeed(request: Request):
     except:
         return Response({"error" : "No feed"}, status=404)
 
-
 @api_view(['GET'])
 @authorized
 def getLikeCountByPost(_, post):
@@ -98,7 +97,6 @@ def getLikeCountByPost(_, post):
         return Response({"likes": len(serialized.data), 'likedByUser': any(likedByUser)}, status=status.HTTP_200_OK)
     except:
         return Response({"likes": None}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 @api_view(['GET'])
 @authorized
@@ -159,7 +157,6 @@ def create_comment(request: Request):
     except:
         return Response({"comment": []}, status=500)
 
-
 @api_view(['GET'])
 @authorized
 def list_comment(_, post):
@@ -169,7 +166,7 @@ def list_comment(_, post):
         return Response({"comments": serialized.data}, status=status.HTTP_200_OK)
     except:
         return Response({"comment": []}, status=500)
-    
+
 @api_view(['GET'])
 @authorized
 def getFacebookPosts(_):

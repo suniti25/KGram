@@ -1,9 +1,10 @@
 from django.urls import path, re_path
 
-from .views import image_upload, list, listOne, create, login, followUser, getFollows, refreshToken
+from .views import image_upload, list, listOne, listUnfollowed, create, login, followUser, getFollows, refreshToken
 
 urlpatterns = [
     path('', list, name="list users"),
+    path('explore/', listUnfollowed, name="list unfollowed users"),
     path('create/', create, name="register user"),
     path('login/', login, name="check user login"),
     path('refreshtoken/', refreshToken, name="check user login"),
