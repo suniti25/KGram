@@ -1,4 +1,3 @@
-from post.utils import getPostCount
 from typing import List
 from django.core.exceptions import ValidationError
 from rest_framework import request
@@ -134,11 +133,10 @@ def image_upload(request: Request, filename: str):
 @authorized
 def getProfile(request: Request):
     try:
-        following = len(request.user.follows.all())
-        _all = UserModel.objects.all()
-        _all_serialized = UserListSerializer(_all, many=True)
-        followers = len([x['id'] for x in _all_serialized.data if request.user.id in x['follows']])
-        posts = getPostCount(request.user.id)
+        user: UserModel = request.user
+        following = len(user.follows.all())
+        followers = len(user.usermodel_set.all())
+        posts = len(user.postmodel_set.all())
         package = dict({"following": following, "followers": followers, "posts": posts})
         return Response({"profile": package})
     except:
