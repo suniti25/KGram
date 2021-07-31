@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 
-from .views import image_upload, list, listOne, listUnfollowed, create, login, followUser, getFollows, refreshToken
+from .views import getProfile, image_upload, list, listOne, listUnfollowed, create, login, followUser, getFollows, refreshToken
 
 urlpatterns = [
     path('', list, name="list users"),
@@ -10,6 +10,7 @@ urlpatterns = [
     path('refreshtoken/', refreshToken, name="check user login"),
     path('follow/', followUser, name="follow another user login"),
     path('follow/list/', getFollows, name="list followings"),
+    path('profile/', getProfile, name="get user profile"),
     re_path(r'^upload/(?P<filename>[^/]+)$', image_upload),
     path('<int:id>/', listOne, name="list one user"),
 ]

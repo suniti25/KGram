@@ -87,6 +87,16 @@ def getFeed(request: Request):
 
 @api_view(['GET'])
 @authorized
+def getProfileFeed(request: Request):
+    try:
+        feed = PostModel.objects.all().filter(posted_by=request.user.id)[:20]
+        serialized = PostListSerializer(feed, many=True)
+        return Response({"posts" : serialized.data}, status=200)
+    except:
+        return Response({"error" : "No feed"}, status=404)
+
+@api_view(['GET'])
+@authorized
 def getLikeCountByPost(_, post):
     '''Get count of likes on a specific post'''
     try:

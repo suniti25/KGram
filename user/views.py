@@ -1,3 +1,4 @@
+from post.utils import getPostCount
 from typing import List
 from django.core.exceptions import ValidationError
 from rest_framework import request
@@ -128,3 +129,17 @@ def image_upload(request: Request, filename: str):
         return Response({"message": "Uploaded successfully", "image": user.image})
     except:
         return Response({"message": "Upload failed."}, status=500)
+
+@api_view(['GET'])
+@authorized
+def getProfile(request: Request):
+    try:
+        following = len(request.user.follows.all())
+        _all = UserModel.objects.all()
+        _all_serialized = UserListSerializer(_all, many=True)
+        followers = len([x['id'] for x in _all_serialized.data if request.user.id in x['follows']])
+        posts = getPostCount(request.user.id)
+        package = dict({"following": following, "followers": followers, "posts": posts})
+        return Response({"profile": package})
+    except:
+        return Response({"profile": None}, 500)
