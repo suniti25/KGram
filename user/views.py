@@ -1,5 +1,8 @@
+from .serializers import UserFollowListSerializer, UserListSerializer, UserCreateSerializer, UserLoginSerializer, sendEmail
+from .models import UserModel
 from typing import List
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMessage
 from rest_framework import request
 from rest_framework.parsers import FileUploadParser
 from user.utlls import authorized, generateToken
@@ -13,8 +16,6 @@ import cloudinary.uploader
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
-from .models import UserModel
-from .serializers import UserFollowListSerializer, UserListSerializer, UserCreateSerializer, UserLoginSerializer
 
 @api_view(['GET'])
 @authorized
@@ -32,11 +33,12 @@ def listUnfollowed(_):
     try:
         all = UserModel.objects.all()
         serialized = UserListSerializer(all, many=True)
-        user : UserModel = _.user
+        user: UserModel = _.user
         followList = [x['id'] for x in _.follows]
         return Response({"users": [x for x in serialized.data if not x['id'] == user.id and not x['id'] in followList]}, status=200)
     except:
         return Response({"users": []}, status=200)
+
 
 @api_view(['GET'])
 @authorized
@@ -49,15 +51,18 @@ def listOne(_, id=None):
     except:
         return Response({"user": None}, status=200)
 
+
 @api_view(['POST'])
 def create(request: Request):
     """Register a new user"""
     serialized = UserCreateSerializer(data=request.data)
     if serialized.is_valid():
+        print('hiiii')
         serialized.save()
         return Response({"message": "user created successfully"}, status=200)
     else:
         return Response({"message": "Validation error", "data": serialized.errors}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 
 @api_view(['POST'])
 def login(request: Request):
@@ -77,6 +82,7 @@ def login(request: Request):
     except:
         return Response({"message": "Account not found."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+
 @api_view(['GET'])
 @authorized
 def refreshToken(request):
@@ -88,6 +94,7 @@ def refreshToken(request):
     except:
         return Response({"message": "Could not refresh token."}, status=status.HTTP_401_UNAUTHORIZED)
 
+
 @api_view(['POST'])
 @authorized
 def followUser(request: Request):
@@ -95,24 +102,26 @@ def followUser(request: Request):
         toFollow = request.data['id']
 
         if toFollow == request.user.id:
-            return Response({"message": "Cannot follow yourself."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)    
+            return Response({"message": "Cannot follow yourself."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         userToFollow = UserModel.objects.get(id=toFollow)
-        user : UserModel = request.user
+        user: UserModel = request.user
         user.follows.add(userToFollow)
         return Response({"message": "User follow successful."}, status=status.HTTP_200_OK)
     except:
         return Response({"message": "Something went wrong."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+
 @api_view(['GET'])
 @authorized
 def getFollows(request: Request):
     try:
-        user : UserModel = request.user
+        user: UserModel = request.user
         follows: List[UserModel] = user.follows.all()
         serialized = UserFollowListSerializer(follows, many=True)
         return Response({"follows": [serialized.data]}, status=status.HTTP_200_OK)
     except:
         return Response({"message": "Something went wrong."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 
 @api_view(['PUT'])
 @parser_classes([FileUploadParser])
@@ -121,13 +130,15 @@ def image_upload(request: Request, filename: str):
     '''Upload image for post'''
     try:
         file_obj = request.data['file']
-        photo = cloudinary.uploader.upload_image(file_obj, folder="users/" + request.user.name)
-        user : UserModel = request.user
+        photo = cloudinary.uploader.upload_image(
+            file_obj, folder="users/" + request.user.name)
+        user: UserModel = request.user
         user.image = photo.build_url()
         user.save()
         return Response({"message": "Uploaded successfully", "image": user.image})
     except:
         return Response({"message": "Upload failed."}, status=500)
+
 
 @api_view(['GET'])
 @authorized
@@ -137,7 +148,29 @@ def getProfile(request: Request):
         following = len(user.follows.all())
         followers = len(user.usermodel_set.all())
         posts = len(user.postmodel_set.all())
-        package = dict({"following": following, "followers": followers, "posts": posts})
+        package = dict(
+            {"following": following, "followers": followers, "posts": posts})
         return Response({"profile": package})
     except:
         return Response({"profile": None}, 500)
+
+
+@api_view(["POST"])
+@authorized
+def verifyEmail(request: Request):
+    code = request.data['code']
+    user: UserModel = request.user
+    if str(code) == user.otp:
+        user.otp = ""
+        user.save()
+        return Response({"message": "Verified successfully"})
+    return Response({"message": "Verification failed"})
+
+
+@api_view(["POST"])
+@authorized
+def resendVerificationCode(request: Request):
+    if len(request.user.otp) > 0:
+        sendEmail(request.user.email, "Verification code: " + request.user.otp)
+        return Response({"message": "Sent Successfully"})
+    return Response({"message": "Already Verified."})
