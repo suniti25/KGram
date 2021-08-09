@@ -8,3 +8,4 @@ class UserModel(models.Model):
     password = models.CharField(max_length=200)
     follows = models.ManyToManyField('user.UserModel', blank=True)
     image = models.CharField(max_length=255, blank=True)
+    otp = models.CharField(max_length = 6, blank =True)
