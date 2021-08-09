@@ -22,7 +22,7 @@ def sendEmail(email_to: str = None, email_body: str = None):
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = ['id', 'email', 'name', 'image', 'follows']
+        fields = ['id', 'email', 'name', 'image', 'follows', 'otp']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

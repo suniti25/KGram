@@ -1,7 +1,7 @@
 from .serializers import UserFollowListSerializer, UserListSerializer, UserCreateSerializer, UserLoginSerializer, sendEmail
 from .models import UserModel
 from typing import List
-from django.core.exceptions import ValidationError
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist, ValidationError
 from django.core.mail import EmailMessage
 from rest_framework import request
 from rest_framework.parsers import FileUploadParser
@@ -77,6 +77,7 @@ def login(request: Request):
             return Response({"message": "Credentials didn't match."}, status=status.HTTP_401_UNAUTHORIZED)
         # login successful
         user_data = UserListSerializer(user, many=False)
+        print(user_data.data)
         access_token = generateToken(user_data.data)
         return Response({"message": "Login successful.", "token": access_token}, status=status.HTTP_200_OK)
     except:

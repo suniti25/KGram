@@ -158,9 +158,9 @@ cloudinary.config(
   api_secret = "RLEUipBsETuyQxqH7v3h8bW-nPU" 
 )
 #email stuff
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
-EMAIL_PORT = 587
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
