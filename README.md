@@ -1,0 +1,2 @@
+# KGram
+KGram is a web application similar to Instagram, Facebook specially for the members of Kathmandu University in order to share news, notices efficiently. The web app is developed using Django framework for backend, React- frontend and dbsqlite- database. The application was developed as our 5th semester group project. This is the backend portion of the porject. One can execute it or test it using PostMan
